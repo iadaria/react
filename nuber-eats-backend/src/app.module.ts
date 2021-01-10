@@ -45,6 +45,7 @@ import { JwtMeddleware } from './jwt/jwt.middleware';
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
+      context: ({ req }) => ({ user: req['user'] }), // potato is going to be in our resolvers
     }),
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY,
