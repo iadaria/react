@@ -12,7 +12,6 @@ import { JwtService } from '../jwt/jwt.service';
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
-    private readonly config: ConfigService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -50,7 +49,8 @@ export class UsersService {
       if (!passwordCorrect) {
         return { ok: false, error: 'Wrong password' };
       }
-      const token = jwt.sign({ id: user.id }, this.config.get('SECRET_KEY'));
+      const token = this.jwtService.sign(user.id);
+      // jwt.sign({ id: user.id }, this.config.get('SECRET_KEY'));
       return { ok: true, token };
     } catch (error) {
       return { ok: false, error };
