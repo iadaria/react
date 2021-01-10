@@ -8,6 +8,9 @@
 # generate module users
 >nest g mo users
 
+>nest g mo jwt
+>nest g s jwt
+
 ## User Entity:
 - id
 - createAt

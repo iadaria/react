@@ -8,10 +8,11 @@ import { Restaurant } from './restaurants/entities/restaurant.enitity';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { User } from './users/entities/users.entity';
+import { JwtModule } from './jwt/jwt.module';
 
 @Module({
   imports: [
-  ConfigModule.forRoot({
+    ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env.test',
       ignoreEnvFile: process.env.NODE_ENV === 'prod',
@@ -22,6 +23,7 @@ import { User } from './users/entities/users.entity';
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
+        SECRET_KEY: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRoot({
@@ -38,6 +40,7 @@ import { User } from './users/entities/users.entity';
     GraphQLModule.forRoot({
       autoSchemaFile: true,
     }),
+    JwtModule.forRoot(),
     RestaurantsModule,
     UsersModule,
     CommonModule,
