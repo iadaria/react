@@ -15,6 +15,7 @@ import { CommonModule } from './common/common.module';
 import { User } from './users/entities/users.entity';
 import { JwtModule } from './jwt/jwt.module';
 import { JwtMeddleware } from './jwt/jwt.middleware';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -52,7 +53,6 @@ import { JwtMeddleware } from './jwt/jwt.middleware';
     }),
     RestaurantsModule,
     UsersModule,
-    CommonModule,
   ],
   controllers: [],
   providers: [],
