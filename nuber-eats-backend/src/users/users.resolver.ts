@@ -3,7 +3,7 @@ import {
   CreateAccountOutput,
   CreateAccountInput,
 } from './dtos/create-account.dto';
-import { User } from './entities/users.entity';
+import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { LoginOutput, LoginInput } from './dtos/login.dto';
 import { UseGuards } from '@nestjs/common';
@@ -74,6 +74,9 @@ export class UsersResolver {
   ): Promise<EditProfileOutput> {
     try {
       await this.userService.editProfile(authUser.id, editProfileInput);
+      return {
+        ok: true,
+      };
     } catch (error) {
       return { ok: false, error };
     }

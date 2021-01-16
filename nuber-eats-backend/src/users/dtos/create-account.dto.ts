@@ -1,5 +1,5 @@
 import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
-import { User } from '../entities/users.entity';
+import { User } from '../entities/user.entity';
 import { MutationOutput } from '../../common/dtos/output.dto';
 
 @InputType()
