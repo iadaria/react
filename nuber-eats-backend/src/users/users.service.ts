@@ -1,18 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as jwt from 'jsonwebtoken';
 import { User } from './entities/user.entity';
 import { CreateAccountInput } from './dtos/create-account.dto';
 import { LoginInput } from './dtos/login.dto';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '../jwt/jwt.service';
 import { EditProfileInput } from './dtos/edit-profile.dto';
+import { Verification } from './entities/verification.entity';
+import { VerifyEmailOutput } from './dtos/verify-email.dto';
+import { UserProfileOutput } from './dtos/user-profile.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
+    @InjectRepository(Verification)
+    private readonly verifications: Repository<Verification>,
+
     private readonly jwtService: JwtService,
   ) {}
 
@@ -29,7 +33,15 @@ export class UsersService {
       if (exists) {
         return { ok: false, error: 'There is a user with that email already' };
       }
-      await this.users.save(this.users.create({ email, password, role }));
+      const user = await this.users.save(
+        this.users.create({ email, password, role }),
+      );
+      await this.verifications.save(
+        this.verifications.create({
+          user,
+        }),
+      );
+
       return { ok: true };
     } catch (e) {
       return { ok: false, error: "Couldn't create account" };
@@ -41,7 +53,10 @@ export class UsersService {
     password,
   }: LoginInput): Promise<{ ok: boolean; error?: string; token?: string }> {
     try {
-      const user = await this.users.findOne({ email });
+      const user = await this.users.findOne(
+        { email },
+        { select: ['id', 'password'] },
+      );
       if (!user) {
         return { ok: false, error: 'User not found' };
       }
@@ -58,18 +73,52 @@ export class UsersService {
     }
   }
 
-  async findById(id: number): Promise<User> {
-    return this.users.findOne({ id });
+  async findById(id: number): Promise<UserProfileOutput> {
+    try {
+      const user = await this.users.findOne({ id });
+      if (user) {
+        return { ok: true, user };
+      }
+    } catch (error) {
+      return { ok: false, error: 'User Not Found' };
+    }
   }
 
   async editProfile(userId: number, { email, password }: EditProfileInput) {
-    const user = await this.users.findOne(userId);
-    if (email) {
-      user.email = email;
+    try {
+      const user = await this.users.findOne(userId);
+      if (email) {
+        user.email = email;
+        user.verified = false;
+        await this.verifications.save(this.verifications.create({ user }));
+      }
+      if (password) {
+        user.password = password;
+      }
+      // await this.users.update(userId, { ...user });
+      await this.users.save(user);
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, error };
     }
-    if (password) {
-      user.password;
+  }
+
+  async verifyEmail(code: string): Promise<VerifyEmailOutput> {
+    try {
+      const verification = await this.verifications.findOne(
+        { code },
+        // { loadRelationIds: true },
+        { relations: ['user'] },
+      );
+      if (verification) {
+        verification.user.verified = true;
+        await this.users.save(verification.user);
+        await this.verifications.delete(verification.id);
+        return { ok: true };
+      }
+      return { ok: false, error: 'Verification not found' };
+    } catch (error) {
+      return { ok: false, error };
     }
-    return this.users.save(user);
   }
 }
