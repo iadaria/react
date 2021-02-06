@@ -8,7 +8,7 @@
 # generate module users
 >nest g mo users
 
->nest g mo jwt
+>nest g mo jwt - this means nest generate module name 'jwt'
 >nest g s jwt
 
 ## User Entity:
@@ -26,3 +26,16 @@
 - Log In
 - See Profile
 - Edit Profile
+- 
+
+# About mailgun
+- the best service
+- fake sms - receive-smss.com/sms/
+- moudle nestjs mailer - https://github.com/nest-modules/mailer
+
+
+
+# Info
+password to pgAdmin is 123456
+password to user postgres is 123456
+current directory > pwd
