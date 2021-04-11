@@ -10,11 +10,7 @@ export class MailService {
     @Inject(CONFIG_OPTIONS) private readonly options: MailModuleOptions, // private readonly configService: ConfigService,
   ) {}
 
-  private async sendEmail(
-    subjet: string,
-    template: string,
-    emailVars: EmailVar[],
-  ) {
+  private async sendEmail(subjet: string, template: string, emailVars: EmailVar[]) {
     const form = new FormData();
     form.append('from', `Nico form Nuber <mailgun@${this.options.domain}>`);
     //form.append('to', this.options.fromEmail); // add card for all email but at now is limit
@@ -28,18 +24,13 @@ export class MailService {
     emailVars.forEach((eVar) => form.append(eVar.key, eVar.value));
 
     try {
-      const response = await got(
-        `https://api.mailgun.net/v3/${this.options.domain}/messages`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Basic ${Buffer.from(
-              `api:${this.options.apiKey}`,
-            ).toString('base64')}`,
-          },
-          body: form,
+      const response = await got(`https://api.mailgun.net/v3/${this.options.domain}/messages`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${Buffer.from(`api:${this.options.apiKey}`).toString('base64')}`,
         },
-      );
+        body: form,
+      });
       console.log('******** ', response.body);
     } catch (error) {
       console.log(error);

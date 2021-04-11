@@ -1,8 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import {
-  CreateAccountOutput,
-  CreateAccountInput,
-} from './dtos/create-account.dto';
+import { CreateAccountOutput, CreateAccountInput } from './dtos/create-account.dto';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { LoginOutput, LoginInput } from './dtos/login.dto';
@@ -23,15 +20,7 @@ export class UsersResolver {
   }
 
   @Mutation((returns) => CreateAccountOutput)
-  createAccount(
-    @Args('input') createAccountInput: CreateAccountInput,
-  ): Promise<CreateAccountOutput> {
-    /* try {
-      return this.userService.createAccount(createAccountInput);
-    } catch (error) {
-      return { ok: false, error };
-    } */
-    // the same code that was above but cleaner
+  createAccount(@Args('input') createAccountInput: CreateAccountInput): Promise<CreateAccountOutput> {
     return this.userService.createAccount(createAccountInput);
   }
 
@@ -48,9 +37,7 @@ export class UsersResolver {
 
   @UseGuards(AuthGuard)
   @Query((returns) => UserProfileOutput)
-  userProfile(
-    @Args() userProfileInput: UserProfileInput,
-  ): Promise<UserProfileOutput> {
+  userProfile(@Args() userProfileInput: UserProfileInput): Promise<UserProfileOutput> {
     return this.userService.findById(userProfileInput.userId);
   }
 
@@ -60,21 +47,11 @@ export class UsersResolver {
     @AuthUser() authUser: User,
     @Args('input') editProfileInput: EditProfileInput,
   ): Promise<EditProfileOutput> {
-    /* try {
-      await this.userService.editProfile(authUser.id, editProfileInput);
-      return {
-        ok: true,
-      };
-    } catch (error) {
-      return { ok: false, error };
-    } */
     return this.userService.editProfile(authUser.id, editProfileInput);
   }
 
   @Mutation((returns) => VerifyEmailOutput)
-  verifyEmail(
-    @Args('input') { code }: VerifyEmailInput,
-  ): Promise<VerifyEmailOutput> {
+  verifyEmail(@Args('input') { code }: VerifyEmailInput): Promise<VerifyEmailOutput> {
     return this.userService.verifyEmail(code);
   }
 }

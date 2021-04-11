@@ -21,22 +21,14 @@ export class UsersService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async createAccount({
-    email,
-    password,
-    role,
-  }: CreateAccountInput): Promise<{ ok: boolean; error?: string }> {
-    // check new user
-    // create user || hash the password
-    //
+  async createAccount({ email, password, role }: CreateAccountInput): Promise<{ ok: boolean; error?: string }> {
     try {
       const exists = await this.users.findOne({ email });
+      console.log('[users.service/createAccount]', exists);
       if (exists) {
         return { ok: false, error: 'There is a user with that email already' };
       }
-      const user = await this.users.save(
-        this.users.create({ email, password, role }),
-      );
+      const user = await this.users.save(this.users.create({ email, password, role }));
       const verification = await this.verifications.save(
         this.verifications.create({
           user,
@@ -51,15 +43,9 @@ export class UsersService {
     }
   }
 
-  async login({
-    email,
-    password,
-  }: LoginInput): Promise<{ ok: boolean; error?: string; token?: string }> {
+  async login({ email, password }: LoginInput): Promise<{ ok: boolean; error?: string; token?: string }> {
     try {
-      const user = await this.users.findOne(
-        { email },
-        { select: ['id', 'password'] },
-      );
+      const user = await this.users.findOne({ email }, { select: ['id', 'password'] });
       if (!user) {
         return { ok: false, error: 'User not found' };
       }
@@ -79,7 +65,7 @@ export class UsersService {
   async findById(id: number): Promise<UserProfileOutput> {
     try {
       const user = await this.users.findOne({ id });
-      if (user) {  
+      if (user) {
         return { ok: true, user };
       }
     } catch (error) {
@@ -93,9 +79,7 @@ export class UsersService {
       if (email) {
         user.email = email;
         user.verified = false;
-        const verification = await this.verifications.save(
-          this.verifications.create({ user }),
-        );
+        const verification = await this.verifications.save(this.verifications.create({ user }));
         this.mailService.sendVerificationEmail(user.email, verification.code);
       }
       if (password) {
