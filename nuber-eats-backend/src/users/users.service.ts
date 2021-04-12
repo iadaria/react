@@ -21,7 +21,11 @@ export class UsersService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async createAccount({ email, password, role }: CreateAccountInput): Promise<{ ok: boolean; error?: string }> {
+  async createAccount({
+    email,
+    password,
+    role,
+  }: CreateAccountInput): Promise<{ ok: boolean; error?: string }> {
     try {
       const exists = await this.users.findOne({ email });
       console.log('[users.service/createAccount]', exists);
@@ -64,10 +68,8 @@ export class UsersService {
 
   async findById(id: number): Promise<UserProfileOutput> {
     try {
-      const user = await this.users.findOne({ id });
-      if (user) {
-        return { ok: true, user };
-      }
+      const user = await this.users.findOneOrFail({ id });
+      return { ok: true, user };
     } catch (error) {
       return { ok: false, error: 'User Not Found' };
     }
