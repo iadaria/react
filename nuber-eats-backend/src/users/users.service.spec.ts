@@ -25,10 +25,11 @@ const mockMailService = {
 type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
 describe('UserService', () => {
-  let service: UsersService;
   // Создаем для всех ключей Repository<User> mock
+  let service: UsersService;
   let usersRepository: MockRepository<User>;
   let verificationRepository: MockRepository<Verification>;
+  let mailService: MailService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -53,6 +54,7 @@ describe('UserService', () => {
       ],
     }).compile();
     service = module.get<UsersService>(UsersService);
+    mailService = module.get<MailService>(MailService);
     usersRepository = module.get(getRepositoryToken(User));
     verificationRepository = module.get(getRepositoryToken(Verification));
   });
@@ -82,8 +84,9 @@ describe('UserService', () => {
       usersRepository.findOne.mockResolvedValue(undefined);
       usersRepository.create.mockReturnValue(createAccountArgs);
       usersRepository.save.mockResolvedValue(createAccountArgs);
-      verificationRepository.create.mockReturnValue(createAccountArgs);
-      await service.createAccount(createAccountArgs);
+      verificationRepository.create.mockReturnValue({ user: createAccountArgs });
+      verificationRepository.save.mockResolvedValue({ code: '123' });
+      const result = await service.createAccount(createAccountArgs);
       expect(usersRepository.create).toHaveBeenCalledTimes(1);
       expect(usersRepository.create).toHaveBeenCalledWith(createAccountArgs);
       expect(usersRepository.save).toHaveBeenCalledTimes(1);
@@ -91,7 +94,11 @@ describe('UserService', () => {
       expect(verificationRepository.create).toHaveBeenCalledTimes(1);
       expect(verificationRepository.create).toHaveBeenCalledWith({ user: createAccountArgs });
       expect(verificationRepository.save).toHaveBeenCalledTimes(1);
-      expect(verificationRepository.save).toHaveBeenCalledWith(createAccountArgs);
+      expect(verificationRepository.save).toHaveBeenCalledWith({ user: createAccountArgs });
+      // mailService
+      expect(mailService.sendVerificationEmail).toHaveBeenCalledTimes(1);
+      expect(mailService.sendVerificationEmail).toHaveBeenCalledWith(expect.any(String), expect.any(String));
+      expect(result).toEqual({ ok: true });
     });
   });
 
