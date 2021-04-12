@@ -236,6 +236,6 @@ describe('UserService', () => {
       verificationRepository.findOne.mockRejectedValue(new Error());
       const result = await service.verifyEmail('');
       expect(result).toEqual({ ok: false, error: 'Could not verify email.' });
-    })
+    });
   });
 });
