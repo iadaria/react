@@ -10,8 +10,9 @@ export class MailService {
     @Inject(CONFIG_OPTIONS) private readonly options: MailModuleOptions, // private readonly configService: ConfigService,
   ) {}
 
-  private async sendEmail(subjet: string, template: string, emailVars: EmailVar[]) {
+  async sendEmail(subjet: string, template: string, emailVars: EmailVar[]) {
     const form = new FormData();
+    //console.log(form);
     form.append('from', `Nico form Nuber <mailgun@${this.options.domain}>`);
     //form.append('to', this.options.fromEmail); // add card for all email but at now is limit
     form.append('to', 'iakim.daria@gmail.com');
@@ -21,6 +22,7 @@ export class MailService {
     form.append('template', template);
     //form.append('v:code', '34234lkjlkj');
     //form.append('v:username', 'jakimova');
+    console.log(form);
     emailVars.forEach((eVar) => form.append(eVar.key, eVar.value));
 
     try {
@@ -32,8 +34,10 @@ export class MailService {
         body: form,
       });
       console.log('******** ', response.body);
+      return true;
     } catch (error) {
       console.log(error);
+      return false;
     }
   }
 
