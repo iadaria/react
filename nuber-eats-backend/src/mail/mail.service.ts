@@ -22,7 +22,7 @@ export class MailService {
     form.append('template', template);
     //form.append('v:code', '34234lkjlkj');
     //form.append('v:username', 'jakimova');
-    console.log(form);
+    //console.log(form);
     emailVars.forEach((eVar) => form.append(eVar.key, eVar.value));
 
     try {
@@ -33,10 +33,10 @@ export class MailService {
         },
         body: form,
       });
-      console.log('******** ', response.body);
+      //console.log('******** ', response.body);
       return true;
     } catch (error) {
-      console.log(error);
+      //console.log(error);
       return false;
     }
   }
