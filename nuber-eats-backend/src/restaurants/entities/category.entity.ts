@@ -1,8 +1,8 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsString, Length } from 'class-validator';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { Category } from './category.entity';
+import { Restaurant } from './restaurant.enitity';
 
 // We are generating(why we use the code first method):
 // 1 Graphql type - by @ObjectType decorator
@@ -11,7 +11,7 @@ import { Category } from './category.entity';
 @InputType({ isAbstract: true }) //abstract input type
 @ObjectType()
 @Entity()
-export class Restaurant extends CoreEntity {
+export class Category extends CoreEntity {
   @Field((type) => String)
   @Column()
   @IsString()
@@ -21,14 +21,14 @@ export class Restaurant extends CoreEntity {
   @Field((type) => String)
   @Column()
   @IsString()
-  bgImage: string;
+  coverImg: string;
 
   @Field((type) => String)
   @Column()
   @IsString()
   address: string;
 
-  @Field((type) => Category)
-  @ManyToOne((type) => Category, (category) => category.restaurants)
-  category: Category;
+  @Field((type) => [Restaurant]) //graphql syntax
+  @OneToMany((type) => Restaurant, (restaurant) => restaurant.category)
+  restaurants: Restaurant[];
 }
