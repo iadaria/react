@@ -1,41 +1,27 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { CreateRestaurantDto } from './dtos/create-restaurant.dto';
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { AuthUser } from 'src/auth/auth-user.decorator';
+import { CreateRestaurantInput, CreateRestaurantOutput } from './dtos/create-restaurant.dto';
 import { Restaurant } from './entities/restaurant.enitity';
 import { RestaurantService } from './restaurants.service';
-import { UpdateRestaurantDto } from './dtos/update-restaurant.dto';
+import { User, UserRole } from 'src/users/entities/user.entity';
+import { SetMetadata } from '@nestjs/common';
+import { Role } from 'src/auth/role.decorator';
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {
   constructor(private readonly restaurantService: RestaurantService) {}
 
-  @Query((returns) => [Restaurant])
-  restaurants(): Promise<Restaurant[]> {
-    return this.restaurantService.getAll();
-  }
-
-  @Mutation((returns) => Boolean)
+  @Mutation((returns) => CreateRestaurantOutput)
+  @Role(['Owner'])
   async createRestaurant(
-    @Args('input') createRestaurantDto: CreateRestaurantDto,
-  ): Promise<boolean> {
-    try {
-      await this.restaurantService.createRestaurant(createRestaurantDto);
-      return true;
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
-  }
-
-  @Mutation((returns) => Boolean)
-  async updateRestaurant(
-    @Args() updateRestaurantDto: UpdateRestaurantDto,
-  ): Promise<boolean> {
-    try {
-      await this.restaurantService.updateRestaurant(updateRestaurantDto);
-      return true;
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
+    @AuthUser() authUser: User,
+    @Args('input') createRestaurantInput: CreateRestaurantInput,
+  ): Promise<CreateRestaurantOutput> {
+    return this.restaurantService.createRestaurant(authUser, createRestaurantInput);
   }
 }
+
+/* @Query((returns) => [Restaurant])
+  restaurants(): Promise<Restaurant[]> {
+    return this.restaurantService.getAll();
+  } */

@@ -8,27 +8,27 @@ import { Restaurant } from './restaurant.enitity';
 // 1 Graphql type - by @ObjectType decorator
 // 2 Database table - by entity decorator - @Column decorator
 // 3 Also - Dtos
-@InputType({ isAbstract: true }) //abstract input type
+@InputType('CategoryInputType', { isAbstract: true }) //fix error multiply
 @ObjectType()
 @Entity()
 export class Category extends CoreEntity {
   @Field((type) => String)
-  @Column()
+  @Column({ unique: true })
   @IsString()
   @Length(5, 100)
   name: string;
 
-  @Field((type) => String)
-  @Column()
+  @Field((type) => String, { nullable: true })
+  @Column({ nullable: true })
   @IsString()
   coverImg: string;
 
   @Field((type) => String)
-  @Column()
+  @Column({ unique: true })
   @IsString()
-  address: string;
+  slug: string;
 
-  @Field((type) => [Restaurant]) //graphql syntax
+  @Field((type) => [Restaurant], { nullable: true }) //graphql syntax
   @OneToMany((type) => Restaurant, (restaurant) => restaurant.category)
   restaurants: Restaurant[];
 }
