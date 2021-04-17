@@ -1,9 +1,10 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsString, Length } from 'class-validator';
-import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, RelationId } from 'typeorm';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Category } from './category.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Dish } from './dish.entity';
 
 // We are generating(why we use the code first method):
 // 1 Graphql type - by @ObjectType decorator
@@ -36,7 +37,7 @@ export class Restaurant extends CoreEntity {
   address: string;
 
   @Field((type) => Category, { nullable: true }) // need add onDelete: 'SET NULL"
-  @ManyToOne((type) => Category, (category) => category.restaurants)
+  @ManyToOne((type) => Category, (category) => category.restaurants, { nullable: true, onDelete: 'SET NULL' })
   category: Category;
 
   @Field((type) => User)
@@ -45,4 +46,8 @@ export class Restaurant extends CoreEntity {
 
   @RelationId((restaurant: Restaurant) => restaurant.owner)
   ownerId: number;
+
+  @Field((type) => [Dish], { nullable: true }) //graphql syntax
+  @OneToMany((type) => Dish, (dish) => dish.restaurant)
+  menu: Dish[];
 }

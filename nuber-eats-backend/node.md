@@ -21,7 +21,7 @@
 - Orders CRUD
 - Orders Subsciption (Owner, Customer, Delivery)
 
-- Payments
+- Payments (CRON)
 
 # generate module users
 >nest g mo users
