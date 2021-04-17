@@ -18,6 +18,11 @@
 - Edit Dish
 - Delete Dish
 
+- Orders CRUD
+- Orders Subsciption (Owner, Customer, Delivery)
+
+- Payments
+
 # generate module users
 >nest g mo users
 

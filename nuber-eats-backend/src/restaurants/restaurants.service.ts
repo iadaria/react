@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { Repository } from 'typeorm';
+import { ILike, Like, Raw, Repository } from 'typeorm';
 import { CreateRestaurantInput, CreateRestaurantOutput } from './dtos/create-restaurant.dto';
 import { Restaurant } from './entities/restaurant.enitity';
 import { EditRestaurantInput, EditRestauranOutput } from './dtos/edit-restaurant.dto';
@@ -12,6 +12,7 @@ import { AllCategoriesOutput } from './dtos/all-categories.dto';
 import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dto';
 import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dto';
+import { SearchRestaurantInput, SearchRestaurantOutput } from './dtos/search-restaurant.dto';
 
 @Injectable()
 export class RestaurantService {
@@ -113,8 +114,8 @@ export class RestaurantService {
       }
       const restaurants = await this.restaurants.find({
         where: { category },
-        take: 25,
         skip: (page - 1) * 25,
+        take: 25,
       });
       category.restaurants = restaurants;
       const totalResults = await this.countRestaurants(category);
@@ -142,6 +143,23 @@ export class RestaurantService {
       return { ok: true, restaurant };
     } catch {
       return { ok: false, error: 'Could not find restaurant' };
+    }
+  }
+
+  // https://www.tutorialspoint.com/sql/sql-like-clause.htm
+  async searchRestaurantByName({ query, page }: SearchRestaurantInput): Promise<SearchRestaurantOutput> {
+    try {
+      const [restaurants, totalResults] = await this.restaurants.findAndCount({
+        where: {
+          //name: ILike(`%${query}%`),
+          name: Raw((name) => `${name} ILIKE '%${query}%'`),
+        },
+        skip: (page - 1) * 25,
+        take: 25,
+      });
+      return { ok: true, restaurants, totalPages: Math.ceil(totalResults / 25), totalResults };
+    } catch {
+      return { ok: false, error: 'Could not search for restaurants' };
     }
   }
 }
