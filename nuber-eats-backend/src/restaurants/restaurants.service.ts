@@ -10,6 +10,7 @@ import { Category } from './entities/category.entity';
 import { DeleteRestaurantInput, DeleteRestaurantOutput } from './dtos/delete-restaurant.dto';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
 import { CategoryInput, CategoryOutput } from './dtos/category.dto';
+import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dto';
 
 @Injectable()
 export class RestaurantService {
@@ -119,6 +120,15 @@ export class RestaurantService {
       return { ok: true, category, totalPages: Math.ceil(totalResults / 25) };
     } catch {
       return { ok: false, error: 'Could not load category' };
+    }
+  }
+
+  async allRestaurants({ page }: RestaurantsInput): Promise<RestaurantsOutput> {
+    try {
+      const [results, totalResults] = await this.restaurants.findAndCount({ skip: page - 1, take: 25 });
+      return { ok: true, results, totalPages: Math.ceil(totalResults / 25), totalResults };
+    } catch {
+      return { ok: false, error: 'Could not load restuarants' };
     }
   }
 }
