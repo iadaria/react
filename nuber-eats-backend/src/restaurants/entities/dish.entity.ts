@@ -4,13 +4,17 @@ import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
 import { CoreEntity } from '../../common/entities/core.entity';
 import { Restaurant } from './restaurant.enitity';
 
+@InputType('DishChoiceInputType', { isAbstract: true })
 @ObjectType()
-class DishOption {
+class DishChoice {
   @Field((type) => String)
   name: string;
 
-  @Field((type) => [String])
-  options: string[];
+  @Field((type) => [String], { nullable: true })
+  choices?: string[];
+
+  @Field((type) => Int, { nullable: true })
+  extra?: number; // price
 }
 
 @InputType('DishInputType', { isAbstract: true }) //fix error multiply
@@ -28,8 +32,8 @@ export class Dish extends CoreEntity {
   @IsNumber()
   price: number;
 
-  @Field((type) => String)
-  @Column()
+  @Field((type) => String, { nullable: true })
+  @Column({ nullable: true })
   @IsString()
   photo: string;
 
@@ -47,6 +51,7 @@ export class Dish extends CoreEntity {
   @RelationId((dish: Dish) => dish.restaurant)
   restaurantId: number;
 
-  @Column({ type: 'json' })
-  options: DishOption[];
+  @Field((type) => [DishChoice], { nullable: true })
+  @Column({ type: 'json', nullable: true })
+  options?: DishChoice[];
 }
