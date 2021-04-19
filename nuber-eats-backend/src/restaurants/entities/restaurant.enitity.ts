@@ -5,6 +5,7 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { Category } from './category.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Dish } from './dish.entity';
+import { Order } from 'src/orders/entities/order.entity';
 
 // We are generating(why we use the code first method):
 // 1 Graphql type - by @ObjectType decorator
@@ -43,6 +44,11 @@ export class Restaurant extends CoreEntity {
   @Field((type) => User)
   @ManyToOne((type) => User, (user) => user.restaurants, { onDelete: 'CASCADE' })
   owner: User;
+
+  // many orders in one this restaurant
+  @Field((type) => [Order])
+  @OneToMany((type) => Order, (order) => order.restaurant, { onDelete: 'CASCADE' })
+  orders: Order[];
 
   @RelationId((restaurant: Restaurant) => restaurant.owner)
   ownerId: number;
