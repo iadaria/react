@@ -1,10 +1,10 @@
 import { Field, Float, InputType, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { IsString, Length } from 'class-validator';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Restaurant } from '../../restaurants/entities/restaurant.enitity';
-import { Dish } from '../../restaurants/entities/dish.entity';
+import { OrderItem } from './order-item';
+import { IsEnum, IsNumber } from 'class-validator';
 
 export enum OrderStatus {
   Pending = 'Pending',
@@ -34,16 +34,18 @@ export class Order extends CoreEntity {
   @ManyToOne((type) => Restaurant, (restaurant) => restaurant.orders)
   restaurant: Restaurant;
 
-  @Field((tyhpe) => [Dish])
-  @ManyToMany((type) => Dish)
+  @Field((tyhpe) => [OrderItem])
+  @ManyToMany((type) => OrderItem)
   @JoinTable()
-  dishes: Dish[];
+  items: OrderItem[];
 
   @Field((type) => Float, { nullable: true })
   @Column({ nullable: true })
+  @IsNumber()
   total?: number;
 
   @Field((type) => OrderStatus)
   @Column({ type: 'enum', enum: OrderStatus })
+  @IsEnum(OrderStatus)
   status: OrderStatus;
 }

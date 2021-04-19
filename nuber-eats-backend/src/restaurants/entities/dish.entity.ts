@@ -4,9 +4,9 @@ import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
 import { CoreEntity } from '../../common/entities/core.entity';
 import { Restaurant } from './restaurant.enitity';
 
-@InputType('DishChoiceInputType', { isAbstract: true })
+@InputType('DishOptionInputType', { isAbstract: true })
 @ObjectType()
-class DishChoice {
+export class DishOption {
   @Field((type) => String)
   name: string;
 
@@ -51,7 +51,7 @@ export class Dish extends CoreEntity {
   @RelationId((dish: Dish) => dish.restaurant)
   restaurantId: number;
 
-  @Field((type) => [DishChoice], { nullable: true })
+  @Field((type) => [DishOption], { nullable: true })
   @Column({ type: 'json', nullable: true })
-  options?: DishChoice[];
+  options?: DishOption[];
 }
