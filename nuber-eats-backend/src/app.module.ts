@@ -16,6 +16,7 @@ import { Dish } from './restaurants/entities/dish.entity';
 import { OrdersModule } from './orders/orders.module';
 import { Order } from 'src/orders/entities/order.entity';
 import { OrderItem } from './orders/entities/order-item';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -51,7 +52,7 @@ import { OrderItem } from './orders/entities/order-item';
       installSubscriptionHandlers: true,
       autoSchemaFile: true,
       context: ({ req, connection }) => {
-        connection && console.log(req, connection.context);
+        //connection && console.log(req, connection.context);
         return {
           token: req ? req.headers['x-jwt'] : connection.context['X-JWT'],
         };
@@ -69,6 +70,7 @@ import { OrderItem } from './orders/entities/order-item';
       fromEmail: process.env.MAILGUN_FROM_EMAIL,
     }),
     OrdersModule,
+    CommonModule,
   ],
   controllers: [],
   providers: [],
