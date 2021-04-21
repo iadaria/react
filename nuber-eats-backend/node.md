@@ -20,6 +20,9 @@
 
 - Orders CRUD
 - Orders Subsciption (Owner, Customer, Delivery)
+  - Pending Orders (Owner) (s: newOrder) (trigger: createOrder(newOrder))
+  - Order Status(Customer, Delivery, Owner) (s: orderUpdate)  (t: editOrder(orderUpdate))
+  - Pending Pickup Order (Delivery) (s: orderUpdate) (t: editOrder(orderUpdate))
 
 - Payments (CRON)
 

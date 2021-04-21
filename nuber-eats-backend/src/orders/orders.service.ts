@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order, OrderStatus } from 'src/orders/entities/order.entity';
 import { User, UserRole } from 'src/users/entities/user.entity';
@@ -10,6 +10,8 @@ import { Dish } from '../restaurants/entities/dish.entity';
 import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
 import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto';
+import { NEW_PENDING_ORDER, PUB_SUB } from 'src/common/common.constants';
+import { PubSub } from 'graphql-subscriptions';
 
 @Injectable()
 export class OrdersService {
@@ -25,6 +27,8 @@ export class OrdersService {
 
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>,
+
+    @Inject(PUB_SUB) private readonly pubSub: PubSub,
   ) {}
 
   async createOrder(customer: User, { restaurantId, items }: CreateOrderInput): Promise<CreateOrderOutput> {
@@ -70,7 +74,8 @@ export class OrdersService {
       const order = this.orders.save(
         this.orders.create({ customer, restaurant, total: orderFinalPrice, items: orderItems }),
       );
-      console.log(order);
+      await this.pubSub.publish(NEW_PENDING_ORDER, { pendingOrders: order });
+      //console.log(order);
       return { ok: true };
     } catch {
       return { ok: false, error: 'Could not create order.' };

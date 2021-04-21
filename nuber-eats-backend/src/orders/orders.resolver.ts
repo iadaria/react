@@ -10,7 +10,7 @@ import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto';
 import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
 import { GetOrdersOutput, GetOrdersInput } from './dtos/get-orders.dto';
 import { OrdersService } from './orders.service';
-import { PUB_SUB } from 'src/common/common.constants';
+import { NEW_PENDING_ORDER, PUB_SUB } from 'src/common/common.constants';
 
 @Resolver((of) => Order)
 export class OrderResolver {
@@ -55,16 +55,35 @@ export class OrderResolver {
     return this.orderService.editOrder(user, editOrderInput);
   }
 
-  @Mutation((returns) => Boolean)
-  potatoReady(): boolean {
-    this.pubSub.publish('hotPotatos', { readyPotato: 'Your potato is ready. Love you.' });
+  @Subscription((reutrns) => Order, {
+    filter: (payload, _, context): true => {
+      console.log(payload);
+      return true;
+    },
+  })
+  @Role(['Owner'])
+  pendingOrders() {
+    return this.pubSub.asyncIterator(NEW_PENDING_ORDER);
+  }
+}
+
+/*  @Mutation((returns) => Boolean)
+  async potatoReady(@Args('potatoId') potatoId: number): Promise<boolean> {
+    await this.pubSub.publish('hotPotatos', { readyPotato: potatoId });
     return true;
   }
 
-  @Subscription((returns) => String)
+  @Subscription((returns) => String, {
+    filter: (payload, variable, context): boolean => {
+      // console.log(payload, variable, context)
+      return payload.readyPotato === variable.potatoId;
+    },
+    resolve: (payload, arg, context, info): any => {
+      return `You potato with the id ${payload.readyPotato} is ready!`;
+    },
+  })
   @Role(['Any'])
-  readyPotato(@AuthUser() user: User) {
+  readyPotato(@Args('potatoId') potatoId: number) {
     //console.log(user);
     return this.pubSub.asyncIterator('hotPotatos');
-  }
-}
+  } */
