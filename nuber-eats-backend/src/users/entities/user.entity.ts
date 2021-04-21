@@ -6,6 +6,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { IsBoolean, IsEmail, IsEnum, IsString } from 'class-validator';
 import { Restaurant } from 'src/restaurants/entities/restaurant.enitity';
 import { Order } from 'src/orders/entities/order.entity';
+import { Payment } from 'src/payments/entities/payment.entity';
 
 export enum UserRole {
   Client = 'Client',
@@ -48,6 +49,10 @@ export class User extends CoreEntity {
   @Field((type) => [Order]) //graphql syntax
   @OneToMany((type) => Order, (order) => order.customer)
   orders: Order[];
+
+  @Field((type) => [Payment]) //graphql syntax
+  @OneToMany((type) => Payment, (payment) => payment.user)
+  payments: Payment[];
 
   // one user-driver can have many orders(null, one or many)
   @Field((type) => [Order]) //graphql syntax

@@ -1,3 +1,9 @@
+#Payment
+- paddle for digit goods
+- strapi. Need compnay.
+- brtaintree payment. Need company.
+
+
 >nest g mo restaurants
 
 >lsof -i:3000
