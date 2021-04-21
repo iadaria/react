@@ -74,7 +74,7 @@ export class OrdersService {
       const order = this.orders.save(
         this.orders.create({ customer, restaurant, total: orderFinalPrice, items: orderItems }),
       );
-      await this.pubSub.publish(NEW_PENDING_ORDER, { pendingOrders: order });
+      await this.pubSub.publish(NEW_PENDING_ORDER, { pendingOrders: { order, ownerId: restaurant.ownerId } });
       //console.log(order);
       return { ok: true };
     } catch {

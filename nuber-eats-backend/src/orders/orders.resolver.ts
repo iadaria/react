@@ -55,11 +55,13 @@ export class OrderResolver {
     return this.orderService.editOrder(user, editOrderInput);
   }
 
-  @Subscription((reutrns) => Order, {
-    filter: (payload, _, context): true => {
-      console.log(payload);
-      return true;
+  @Subscription((returns) => Order, {
+    filter: ({ pendingOrders: { ownerId } }, _, { user }): boolean => {
+      console.log(ownerId, user.id);
+      //return ownerId === 1;
+      return ownerId === user.id;
     },
+    resolve: ({ pendingOrders: { order } }) => order,
   })
   @Role(['Owner'])
   pendingOrders() {
