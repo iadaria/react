@@ -51,7 +51,7 @@ export class User extends CoreEntity {
   orders: Order[];
 
   @Field((type) => [Payment]) //graphql syntax
-  @OneToMany((type) => Payment, (payment) => payment.user)
+  @OneToMany((type) => Payment, (payment) => payment.user, { eager: true })
   payments: Payment[];
 
   // one user-driver can have many orders(null, one or many)
