@@ -2,7 +2,7 @@ import { isLoggedInVar } from '../apollo';
 
 export const LoggedInRouter = () => {
   const onClick = () => {
-    isLoggedInVar(false);
+    //Var(false);
   };
   return (
     <div>

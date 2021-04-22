@@ -1,10 +1,7 @@
-import { useForm } from 'react-hook-form';
-import { isLoggedInVar } from '../apollo';
-
-interface IForm {
-  email: string;
-  password: string;
-}
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import CreateAccount from '../pages/create-account';
+import { Login } from '../pages/login';
 
 export const LoggedOutRouter = () => {
   const {
@@ -22,7 +19,20 @@ export const LoggedOutRouter = () => {
   };
 
   return (
-    <div>
+    <Router>
+      <Switch>
+        <Route path="/">
+          <Login />
+        </Route>
+        <Route path="/create-account">
+          <CreateAccount />
+        </Route>
+        <Route path="/">
+          <CreateAccount />
+        </Route>
+      </Switch>
+    </Router>
+    /* <div>
       <h1>Logged Out</h1>
       <form onSubmit={hundleSubmit(onSubmit)}>
         <div>
@@ -48,7 +58,7 @@ export const LoggedOutRouter = () => {
         </div>
         <button className="bg-yellow">Click to login</button>
       </form>
-    </div>
+    </div> */
   );
 };
 function hundleSubmit(

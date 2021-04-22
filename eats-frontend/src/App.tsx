@@ -10,11 +10,3 @@ function App() {
 }
 
 export default App;
-
-/*
-const { data: { isLoggedIn } } = useQuery(IS_LOGGED_IN);
-const IS_LOGGED_IN = gql`
-  query isLoggedIn {
-    isLoggedIn @client
-  }
-`; */
