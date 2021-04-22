@@ -52,9 +52,14 @@ export class RestaurantService {
     }
   }
 
-  async editRestaurant(owner: User, editRestaurantInput: EditRestaurantInput): Promise<EditRestauranOutput> {
+  async editRestaurant(
+    owner: User,
+    editRestaurantInput: EditRestaurantInput,
+  ): Promise<EditRestauranOutput> {
     try {
-      const restaurant = await this.restaurants.findOneOrFail(editRestaurantInput, { loadRelationIds: true });
+      const restaurant = await this.restaurants.findOneOrFail(editRestaurantInput, {
+        loadRelationIds: true,
+      });
       if (!restaurant) {
         return { ok: false, error: 'Restaurant not found' };
       }
@@ -122,6 +127,9 @@ export class RestaurantService {
       }
       const restaurants = await this.restaurants.find({
         where: { category },
+        order: {
+          isPromoted: 'DESC',
+        },
         skip: (page - 1) * 25,
         take: 25,
       });
@@ -135,7 +143,11 @@ export class RestaurantService {
 
   async allRestaurants({ page }: RestaurantsInput): Promise<RestaurantsOutput> {
     try {
-      const [results, totalResults] = await this.restaurants.findAndCount({ skip: page - 1, take: 25 });
+      const [results, totalResults] = await this.restaurants.findAndCount({
+        skip: page - 1,
+        take: 25,
+        order: { isPromoted: 'DESC' },
+      });
       return { ok: true, results, totalPages: Math.ceil(totalResults / 25), totalResults };
     } catch {
       return { ok: false, error: 'Could not load restuarants' };

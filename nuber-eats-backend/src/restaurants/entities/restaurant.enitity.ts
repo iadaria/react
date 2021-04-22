@@ -38,7 +38,10 @@ export class Restaurant extends CoreEntity {
   address: string;
 
   @Field((type) => Category, { nullable: true }) // need add onDelete: 'SET NULL"
-  @ManyToOne((type) => Category, (category) => category.restaurants, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne((type) => Category, (category) => category.restaurants, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   category: Category;
 
   // many orders in one this restaurant
@@ -56,4 +59,12 @@ export class Restaurant extends CoreEntity {
   @Field((type) => [Dish], { nullable: true }) //graphql syntax
   @OneToMany((type) => Dish, (dish) => dish.restaurant)
   menu: Dish[];
+
+  @Field((type) => Boolean)
+  @Column({ default: false }) // fo DB
+  isPromoted: boolean;
+
+  @Field((type) => Date, { nullable: true })
+  @Column({ nullable: true })
+  promotedUntil: Date;
 }
