@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Restaurant } from 'src/restaurants/entities/restaurant.enitity';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { Payment } from './entities/payment.entity';
 import { User } from 'src/users/entities/user.entity';
 import { CreatePaymentOutput, CreatePaymentInput } from './dtos/create-payment.dto';
 import { GetPaymentsOutput } from './dtos/get-payments.dto';
-import { Cron, SchedulerRegistry } from '@nestjs/schedule';
+import { Cron, Interval, SchedulerRegistry } from '@nestjs/schedule';
 
 @Injectable()
 export class PaymentService {
@@ -53,8 +53,21 @@ export class PaymentService {
     }
   }
 
-  @Cron('30 * * * * *', { name: 'myjog' })
+  @Interval(2000)
+  async checkPromoteRestaurants() {
+    const restaurants = await this.restaurants.find({
+      isPromoted: true,
+      promotedUntil: LessThan(new Date()), // less than today should be
+    });
+    restaurants.forEach(async (restaurant) => {
+      restaurant.isPromoted = false;
+      restaurant.promotedUntil = null;
+      await this.restaurants.save(restaurant);
+    });
+  }
+
+  /* @Cron('30 * * * * *', { name: 'myjog' })
   async checkForPayments() {
     const job = this.schedulerRegistry.getCronJob('myJob');
-  }
+  } */
 }
