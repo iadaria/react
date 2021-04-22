@@ -7,19 +7,18 @@ import './styles/styles.css';
 import { client } from './apollo';
 
 function render() {
-    ReactDOM.render(
+  ReactDOM.render(
     <React.StrictMode>
       <ApolloProvider client={client}>
-      <App />
+        <App />
       </ApolloProvider>
     </React.StrictMode>,
-    document.getElementById('root')
+    document.getElementById('root'),
   );
-
 }
 
 if (module.hot) {
-  module.hot.accept('./App', function() {
+  module.hot.accept('./App', function () {
     setTimeout(render);
   });
 }
