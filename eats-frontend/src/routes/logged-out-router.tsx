@@ -1,4 +1,5 @@
 import React from 'react';
+import { useForm } from 'react-hook-form';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import CreateAccount from '../pages/create-account';
 import { Login } from '../pages/login';
@@ -9,7 +10,7 @@ export const LoggedOutRouter = () => {
     watch,
     handleSubmit,
     formState: { errors },
-  } = useForm<IForm>();
+  } = useForm();
   const onSubmit = () => {
     console.log(watch('email'));
   };

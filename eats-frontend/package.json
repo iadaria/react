@@ -27,11 +27,12 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "tailwind:build": "tailwind build ./src/styles/tailwind.css -o ./src/styles/styles.css",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "tailwind:build": "tailwind build ./src/styles/tailwind.css -o ./src/styles/styles.css",
+    "apollo:codegen": "rm -rf src/__generated__ && apollo client:codegen --target=typescript --outputFlat src/__generated__"
   },
   "eslintConfig": {
     "extends": [

@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client';
 import { useForm } from 'react-hook-form';
 import { FormError } from '../components/form-error';
+import { loginMutation, loginMutationVariables } from '../__generated__/loginMutation';
 
 interface ILoginForm {
   email: string;
@@ -8,8 +9,8 @@ interface ILoginForm {
 }
 
 const LOGIN_MUTATION = gql`
-  mutation PotatoMutation($email: String!, $password: String!) {
-    login(input: { email: $email, password: $password }) {
+  mutation loginMutation($loginInput: LoginInput!) {
+    login(input: $loginInput) {
       ok
       token
       error
@@ -24,12 +25,26 @@ export const Login = () => {
     getValues,
     formState: { errors },
   } = useForm<ILoginForm>();
-  const [loginMutation, { loading, error, data }] = useMutation(LOGIN_MUTATION);
+  const onCompleted = ({ login }: loginMutation) => {
+    const { error, ok, token } = login;
+    if (ok) {
+      console.log(token);
+    }
+  };
+  const [loginMutation, { loading, error, data: loginMutationResult }] = useMutation<
+    loginMutation,
+    loginMutationVariables
+  >(LOGIN_MUTATION, { onCompleted });
 
   const onSubmit = () => {
     const { email, password } = getValues();
     loginMutation({
-      variables: { email, password },
+      variables: {
+        loginInput: {
+          email,
+          password,
+        },
+      },
     });
   };
 
@@ -59,8 +74,23 @@ export const Login = () => {
             <FormError errorMessage="Password must be more than 10 chars." />
           )}
           <button className="btn">Log in</button>
+          {loginMutationResult?.login.error && (
+            <FormError errorMessage={loginMutationResult.login.error} />
+          )}
         </form>
       </div>
     </div>
   );
 };
+
+/* const [loginMutation, { loading, error, data }] = useMutation<loginMutation, loginMutationVariables>(
+  LOGIN_MUTATION,
+  {
+    variables: {
+      loginInput: {
+        email: watch('email').toString(),
+        password: watch('password').toString(),
+      },
+    },
+  }
+); */
