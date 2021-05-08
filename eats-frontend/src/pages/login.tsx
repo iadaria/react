@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client';
+import { ApolloError, gql, useMutation } from '@apollo/client';
 import { useForm } from 'react-hook-form';
 import { FormError } from '../components/form-error';
 import { loginMutation, loginMutationVariables } from '../__generated__/loginMutation';
@@ -30,22 +30,30 @@ export const Login = () => {
     if (ok) {
       console.log(token);
     }
+    if (error) {
+      console.log(error);
+    }
+  };
+  const onError = (error: ApolloError) => {
+    console.log('erorr :>>', error.message);
   };
   const [loginMutation, { loading, error, data: loginMutationResult }] = useMutation<
     loginMutation,
     loginMutationVariables
-  >(LOGIN_MUTATION, { onCompleted });
+  >(LOGIN_MUTATION, { onCompleted, onError });
 
   const onSubmit = () => {
-    const { email, password } = getValues();
-    loginMutation({
-      variables: {
-        loginInput: {
-          email,
-          password,
+    if (!loading) {
+      const { email, password } = getValues();
+      loginMutation({
+        variables: {
+          loginInput: {
+            email,
+            password,
+          },
         },
-      },
-    });
+      });
+    }
   };
 
   return (
@@ -73,10 +81,11 @@ export const Login = () => {
           {errors.password?.type === 'minLength' && (
             <FormError errorMessage="Password must be more than 10 chars." />
           )}
-          <button className="btn">Log in</button>
+          <button className="btn">{loading ? 'Loading...' : 'Log in'}</button>
           {loginMutationResult?.login.error && (
             <FormError errorMessage={loginMutationResult.login.error} />
           )}
+          {error && <FormError errorMessage={error.message} />}
         </form>
       </div>
     </div>
