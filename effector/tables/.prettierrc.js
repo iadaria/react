@@ -4,5 +4,4 @@ module.exports = {
   jsxBracketSameLine: true,
   singleQuote: true,
   trailingComma: 'all', //конечная запятая
-  printWidth: 110,
 };
